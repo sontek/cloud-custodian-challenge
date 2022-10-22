@@ -19,16 +19,30 @@ resource "aws_s3_bucket" "unencrypted-bucket" {
     bucket = "my-unencrypted-bucket"
 }
 
-resource "aws_s3_bucket" "encrypted-bucket" {
-    bucket = "my-encrypted-bucket"
+resource "aws_s3_bucket" "aes-encrypted-bucket" {
+    bucket = "my-aes-encrypted-bucket"
 }
 
-resource "aws_s3_bucket_server_side_encryption_configuration" "encrypted-configuration" {
-  bucket = aws_s3_bucket.encrypted-bucket.bucket
+resource "aws_s3_bucket_server_side_encryption_configuration" "aes-encrypted-configuration" {
+  bucket = aws_s3_bucket.aes-encrypted-bucket.bucket
 
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "AES256"
+    }
+  }
+}
+
+resource "aws_s3_bucket" "kms-encrypted-bucket" {
+    bucket = "my-kms-encrypted-bucket"
+}
+
+resource "aws_s3_bucket_server_side_encryption_configuration" "kms-encrypted-configuration" {
+  bucket = aws_s3_bucket.kms-encrypted-bucket.bucket
+
+  rule {
+    apply_server_side_encryption_by_default {
+      sse_algorithm     = "aws:kms"
     }
   }
 }
