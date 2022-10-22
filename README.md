@@ -76,5 +76,7 @@ get deployed.  To do this we are going to use `c7n-left` to run a policy against
 the terraform directly.
 
 ## GOAL
-*Write a cloud custodian policy that identifies which terraform resource hasn't
+- *Write a cloud custodian policy that identifies which terraform resource hasn't
+enabled server side encryption*
+- *Write a cloud custodian policy that prevents using AES256 (i.e require aws:kms)
 enabled server side encryption*
