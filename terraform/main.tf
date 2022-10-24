@@ -46,3 +46,39 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "kms-encrypted-con
     }
   }
 }
+
+resource "aws_dynamodb_table" "cool-dynamo-table" {
+  name             = "TestTable"
+  hash_key         = "BrodoBaggins"
+  billing_mode     = "PAY_PER_REQUEST"
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  attribute {
+    name = "BrodoBaggins"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table" "non-replicated-dynamo-table" {
+  name             = "UnreplicatedTable"
+  hash_key         = "NoReplication"
+  billing_mode     = "PAY_PER_REQUEST"
+  stream_enabled   = true
+  stream_view_type = "NEW_AND_OLD_IMAGES"
+
+  attribute {
+    name = "NoReplication"
+    type = "S"
+  }
+}
+
+resource "aws_dynamodb_table_replica" "cool-dynamo-table-replica" {
+  global_table_arn = aws_dynamodb_table.cool-dynamo-table.arn
+}
+
+resource "aws_dynamodb_tag" "label-cool-dynamo" {
+  resource_arn = aws_dynamodb_table.cool-dynamo-table.arn
+  key          = "owner"
+  value        = "sontek"
+}

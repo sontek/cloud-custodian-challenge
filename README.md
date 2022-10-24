@@ -80,3 +80,20 @@ the terraform directly.
 enabled server side encryption*
 - *Write a cloud custodian policy that prevents using AES256 (i.e require aws:kms)
 enabled server side encryption*
+
+# Challenge 3 - Kubernetes
+Kubernetes is effectively a cloud of its own and so you'll want the same type of
+governance on it that you would in AWS or Terraform. We've provided a `kubernetes`
+folder with a set of resources you can install in your cluster so we can start
+governing them.
+
+## GOAL
+- *write a cloud custodian policy that requires resource requests limits on pods*
+- *write a cloud custodian policy that requires `app.kubernetes.io/managed-by` 
+  label on pods*
+
+# Challenge 3 - Kubernetes Admission Controller
+The previous challenge identified resources that were in violation *after* they
+were deployed to the cluster.  Ideally we want to stop the resources *before*
+they ge deployed.  To do this we are going to enable the `c7n-kube` admission
+controller on our cluster.
