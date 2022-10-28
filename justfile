@@ -39,11 +39,15 @@ k8s-install:
     helm repo update
     helm install c7n-kube c7n/c7n-kube  --namespace c7n-system -f values.yml --create-namespace
 
+# Uninstall the admission controller
+k8s-uninstall:
+    helm uninstall c7n-kube -n c7n-system
+
 
 
 # Run core c7n on a policy directory
 run DIR:
-    ./c7n-local.py run -s output {{ DIR }} -v
+    ./c7n-local.py run -s output {{ DIR }} -v --cache-period=0
 # Run a policy directory with c7n-left
 run-left DIR:
     c7n-left run -p {{ DIR }} -d terraform/

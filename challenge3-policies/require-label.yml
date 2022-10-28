@@ -7,7 +7,7 @@ policies:
       - and:
         - type: value
           key: metadata.namespace
-          value: default
+          value: c7n
         - type: value
           key: metadata.labels."app.kubernetes.io/managed-by"
           value: absent
