@@ -1,0 +1,23 @@
+policies:
+  - name: test-terraform-encrypts-s3-with-kms
+    resource: terraform.aws_s3_bucket
+    filters:
+      - type: traverse
+        resources:
+          - aws_s3_bucket_server_side_encryption_configuration
+        attrs:
+          - type: value
+            key: rule.apply_server_side_encryption_by_default.sse_algorithm
+            value: AES256
+
+  - name: test-sqs-is-encrypted
+    resource: terraform.aws_sqs_queue
+    filters:
+      - or:
+        - type: value
+          key: sqs_managed_sse_enabled
+          value: absent
+
+        - type: value
+          key: sqs_managed_sse_enabled
+          value: false
