@@ -47,7 +47,8 @@ k8s-uninstall:
 
 # Run core c7n on a policy directory
 run DIR:
-    ./c7n-local.py run -s output {{ DIR }} -v --cache-period=0
+    ./c7n-local.py run -s output {{ DIR }} --cache-period=0
+
 # Run a policy directory with c7n-left
 run-left DIR:
     c7n-left run -p {{ DIR }} -d terraform/
