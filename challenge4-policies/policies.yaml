@@ -1,0 +1,65 @@
+  policies:
+    - name: deny-pod-exec-based-on-pod
+      resource: k8s.pod
+      description: You can't connect to any pods with database in the name, or the namespace c7n-system
+      mode:
+        type: k8s-admission
+        subresource: ['exec', 'attach']
+        on-match: deny
+        operations:
+        - CONNECT
+      filters:
+        - or:
+          - type: value
+            key: container
+            op: regex
+            value: .*database.*
+          - type: event
+            key: request.namespace
+            value: c7n-system
+
+    - name: missing-recommended-labels
+      mode:
+        type: k8s-admission
+        on-match: warn
+        operations:
+          - CREATE
+          - UPDATE
+      resource: k8s.pod
+      description: "All pods must have foo and bar labels"
+      filters:
+        - or:
+          - metadata.labels.foo: absent
+          - metadata.labels.bar: absent
+      actions:
+        - type: event-label
+          labels:
+            admission.cloudcustodian.io/message: missing_labels
+        - type: auto-label-user
+
+    - name: restrict-service-account-usage
+      mode:
+        type: k8s-admission
+        on-match: deny
+        operations:
+          - CREATE
+          - UPDATE
+      resource: k8s.pod
+      filters:
+        - type: value
+          key: spec.serviceAccountName
+          value: cluster-admin
+
+    - name: require-at-least-3-replicas
+      resource: k8s.deployment
+      mode:
+        type: k8s-admission
+        on-match: deny
+        operations:
+          - CREATE
+          - UPDATE
+      filters:
+        - type: value
+          key: spec.replicas
+          value: 3
+          op: lt

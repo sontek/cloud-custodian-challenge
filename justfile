@@ -54,3 +54,18 @@ run DIR:
 # Run a policy directory with c7n-left
 run-left DIR:
     c7n-left run -p {{ DIR }} -d terraform/
+
+production-db:
+  kubectl run production-database --image=postgres --labels "bar=bar"
+
+exec:
+  kubectl exec --stdin --tty production-database -- /bin/bash
+
+production-db-info:
+  kubectl describe pod production-database
+
+production-db-clean:
+  kubectl delete pod production-database --force
+
+report-pod-reader:
+  custodian report challenge3-policies/role-with-vars.yaml -s output -p deny-role-verbs --field Verbs=rules[].verbs[]
