@@ -1,0 +1,13 @@
+policies:
+  - name: require-managed-by-label
+    description: |
+      Check if any policies aren't labeled
+    resource: k8s.pod
+    filters:
+      - and:
+        - type: value
+          key: metadata.namespace
+          value: default
+        - type: value
+          key: metadata.labels."app.kubernetes.io/managed-by"
+          value: absent
