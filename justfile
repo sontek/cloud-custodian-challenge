@@ -24,9 +24,22 @@ apply:
 k8s-apply DIR:
     kubectl apply -f {{ DIR }} --force
 
+# Remove all the k8s resources
+k8s-remove DIR:
+    kubectl delete -f {{ DIR }} --force
+
+# List all k8s resources
 k8s-resources:
     kubectl get all -A
     kubectl get mutatingwebhookconfigurations -A
+
+# Install the admission controller
+k8s-install:
+    helm repo add c7n https://cloud-custodian.github.io/helm-charts/
+    helm repo update
+    helm install c7n-kube c7n/c7n-kube  --namespace c7n-system -f values.yml --create-namespace
+
+
 
 # Run core c7n on a policy directory
 run DIR:
