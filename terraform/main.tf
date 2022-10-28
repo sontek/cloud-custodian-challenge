@@ -59,6 +59,7 @@ resource "aws_s3_bucket_server_side_encryption_configuration" "aes-encrypted-con
   rule {
     apply_server_side_encryption_by_default {
       sse_algorithm     = "AES256"
+      # sse_algorithm     = "aws:kms"
     }
   }
 }
@@ -84,6 +85,7 @@ resource "aws_sqs_queue" "no-dlq-queue" {
     name                        = "no-dlq-queue.fifo"
     fifo_queue                  = true
     content_based_deduplication = true
+    # sqs_managed_sse_enabled     = true
 
     tags = {
         Environment = "dev"
