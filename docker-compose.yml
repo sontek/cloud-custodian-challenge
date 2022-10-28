@@ -4,7 +4,7 @@ services:
     container_name: c7n-challenge-localstack
     image: localstack/localstack:latest
     environment:
-      SERVICES: "s3"
+      SERVICES: "sqs,s3,dynamodb"
     ports:
       - "4566:4566"
 
