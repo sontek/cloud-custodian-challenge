@@ -1,5 +1,9 @@
 policies:
   - name: test-terraform-encrypts-s3-with-kms
+    description: |
+      We only use `aws:kms` for encrypting our S3 buckets.
+
+      Please update your server_side_encryption_configuration.
     resource: terraform.aws_s3_bucket
     filters:
       - type: traverse
@@ -11,6 +15,8 @@ policies:
             value: AES256
 
   - name: test-sqs-is-encrypted
+    description: |
+      SQS Must have server side encryption enabled
     resource: terraform.aws_sqs_queue
     filters:
       - or:
