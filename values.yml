@@ -1,40 +1,85 @@
 certManager:
   enabled: true
 
+webhook:
+  caBundle: blahblahblah
+
+  namespaceSelector:
+    matchExpressions:
+      - key: c7n-monitor
+        operator: NotIn
+        values: ["false"]
+  rules:
+    - apiGroups: ["*"]
+      apiVersions: ["*"]
+      operations: ["*"]
+      resources: ["pods", "pods/exec", "pods/attach", "deployments"]
+      scope: "*"
+
 policies:
-  source: configMap
+  source: "configMap"
   configMap:
     policies:
+      - name: deny-pod-exec-based-on-pod
+        resource: k8s.pod
+        description: You can't connect to any pods with database in the name, or the namespace c7n-system
+        mode:
+          type: k8s-admission
+          subresource: ['exec', 'attach']
+          on-match: deny
+          operations:
+          - CONNECT
+        filters:
+          - or:
+            - type: value
+              key: container
+              op: regex
+              value: .*database.*
+            - type: event
+              key: request.namespace
+              value: c7n-system
       - name: missing-recommended-labels
+        mode:
+          type: k8s-admission
+          on-match: warn
+          operations:
+            - CREATE
+            - UPDATE
+        resource: k8s.pod
+        description: "All pods must have foo and bar labels"
+        filters:
+          - or:
+            - metadata.labels.foo: absent
+            - metadata.labels.bar: absent
+        actions:
+          - type: event-label
+            labels:
+              admission.cloudcustodian.io/message: missing_labels
+          - type: auto-label-user
+      - name: restrict-service-account-usage
         mode:
           type: k8s-admission
           on-match: deny
           operations:
             - CREATE
             - UPDATE
-        description: |
-          Kubernetes recommmended the following labels from its docs:
-          app.kubernetes.io/name
-          app.kubernetes.io/instance
-          app.kubernetes.io/version
-          app.kubernetes.io/component
-          app.kubernetes.io/part-of
-          app.kubernetes.io/managed-by
-          https://kubernetes.io/docs/concepts/overview/working-with-objects/common-labels/
         resource: k8s.pod
         filters:
-          - or:
-              - metadata.labels."app.kubernetes.io/name": absent
-              - metadata.labels."app.kubernetes.io/instance": absent
-              - metadata.labels."app.kubernetes.io/version": absent
-              - metadata.labels."app.kubernetes.io/component": absent
-              - metadata.labels."app.kubernetes.io/part-of": absent
-              - metadata.labels."app.kubernetes.io/managed-by": absent
-
-webhook:
-  rules:
-    - apiGroups: [""]
-      apiVersions: ["v1"]
-      operations: ["CREATE"]
-      resources: ["pods"]
-      scope: Namespaced
+          - type: value
+            key: spec.serviceAccountName
+            value: cluster-admin
+      - name: require-at-least-3-replicas
+        resource: k8s.deployment
+        mode:
+          type: k8s-admission
+          on-match: deny
+          operations:
+            - CREATE
+            - UPDATE
+        filters:
+          - type: value
+            key: spec.replicas
+            value: 3
+            op: lt
+  volumeMount:
+    readOnly: true
