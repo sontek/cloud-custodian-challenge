@@ -92,8 +92,12 @@ governing them.
 - *write a cloud custodian policy that requires `app.kubernetes.io/managed-by` 
   label on pods*
 
-# Challenge 3 - Kubernetes Admission Controller
+# Challenge 4 - Kubernetes Admission Controller
 The previous challenge identified resources that were in violation *after* they
 were deployed to the cluster.  Ideally we want to stop the resources *before*
 they ge deployed.  To do this we are going to enable the `c7n-kube` admission
 controller on our cluster.
+
+## GOAL
+- *write a cloud custodian policy that rejects pods without requests limits*
+- *write a cloud custodian policy that rejects pods without the label `app.kubernetes.io/managed-by`*
