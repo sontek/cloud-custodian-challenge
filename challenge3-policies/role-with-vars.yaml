@@ -1,0 +1,17 @@
+vars:
+  rules: &rules
+    - type: value
+      key: rules[].verbs[]
+      value: impersonate
+      op: in
+      value_type: swap
+
+policies:
+  - name: deny-role-verbs
+    resource: k8s.role
+    filters:
+    - and: *rules
+  - name: deny-cluster-role-verbs
+    resource: k8s.cluster-role
+    filters:
+      - and: *rules

@@ -1,0 +1,26 @@
+vars:
+  mode: &mode
+    type: k8s-admission
+    operations:
+      - CREATE
+      - UPDATE
+    on-match: deny
+    
+  rules: &rules
+    - type: value
+      key: rules[].verbs[]
+      value: impersonate
+      op: in
+      value_type: swap
+
+policies:
+  - name: deny-role-verbs
+    mode: *mode
+    resource: k8s.role
+    filters:
+    - and: *rules
+  - name: deny-cluster-role-verbs
+    mode: *mode
+    resource: k8s.cluster-role
+    filters:
+      - and: *rules

@@ -16,6 +16,9 @@ kind: Pod
 metadata:
   name: c7n-challenge-nginx-host-path
   namespace: c7n
+  labels:
+    foo: bar
+    bar: baz
 spec:
   volumes:
     - name: c7n-website-storage
