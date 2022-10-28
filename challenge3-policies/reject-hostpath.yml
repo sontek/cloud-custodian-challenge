@@ -1,0 +1,11 @@
+policies:
+  - name: reject-host-path-volumes
+    description: |
+      We do not allow hostPath volumes because the data would
+      be lost when a node rotates
+    resource: k8s.pod
+    filters:
+      - and:
+        - type: value
+          key: spec.volumes[].host_path.path
+          value: present

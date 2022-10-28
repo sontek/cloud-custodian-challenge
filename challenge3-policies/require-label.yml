@@ -1,7 +1,7 @@
 policies:
   - name: require-managed-by-label
     description: |
-      Check if any policies aren't labeled
+      Check if any policies aren't labeled with
     resource: k8s.pod
     filters:
       - and:
