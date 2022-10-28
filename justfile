@@ -43,11 +43,13 @@ k8s-install:
 k8s-uninstall:
     helm uninstall c7n-kube -n c7n-system
 
-
+# Run core c7n on a policy directory against LocalStack
+run-local DIR:
+    ./c7n-local.py run -s output {{ DIR }} --cache-period=0
 
 # Run core c7n on a policy directory
 run DIR:
-    ./c7n-local.py run -s output {{ DIR }} --cache-period=0
+    custodian run -s output {{ DIR }} --cache-period=0
 
 # Run a policy directory with c7n-left
 run-left DIR:
